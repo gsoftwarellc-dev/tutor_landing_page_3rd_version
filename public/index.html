@@ -1,0 +1,307 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AceLab Tutors – Student Registration</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <main>
+    <header class="page-header">
+      <img src="/6.png" alt="Ace Lab Tutors logo" class="site-logo" />
+      <h1>Student Registration</h1>
+      <p>
+        Please complete the form below to register your student for tutoring. Fields marked with *
+        are required.
+      </p>
+    </header>
+
+    <form id="registration-form" novalidate>
+      <p aria-hidden="true">* Required fields</p>
+
+      <fieldset>
+        <legend>Parent/Guardian</legend>
+
+        <div>
+          <label for="parentName">Parent/Guardian Name *</label>
+          <input type="text" id="parentName" name="parentName" autocomplete="name" required />
+        </div>
+
+        <div>
+          <label for="relationship">Relationship to student</label>
+          <input type="text" id="relationship" name="relationship" autocomplete="off" />
+        </div>
+
+        <div>
+          <label for="parentEmail">Parent/Guardian Email *</label>
+          <input type="email" id="parentEmail" name="parentEmail" autocomplete="email" required />
+        </div>
+
+        <div>
+          <label for="parentPhone">Parent/Guardian Phone Number *</label>
+          <input type="tel" id="parentPhone" name="parentPhone" autocomplete="tel" required />
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Student</legend>
+
+        <div>
+          <label for="studentName">Student Name *</label>
+          <input type="text" id="studentName" name="studentName" autocomplete="name" required />
+        </div>
+
+        <div>
+          <label for="studentDob">Student Date of Birth *</label>
+          <input type="date" id="studentDob" name="studentDob" required />
+        </div>
+
+        <div>
+          <label for="studentEmail">Student Email</label>
+          <input type="email" id="studentEmail" name="studentEmail" autocomplete="email" />
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Class & Subject Selection *</legend>
+
+        <h3>PRIMARY SCHOOL CLASSES</h3>
+        
+        <h4>PRIMARY 2</h4>
+        <div>
+          <input type="checkbox" id="prim2-maths" name="subjects" value="Primary 2 - Maths" />
+          <label for="prim2-maths">Maths</label>
+        </div>
+        <div>
+          <input type="checkbox" id="prim2-english" name="subjects" value="Primary 2 - English Language" />
+          <label for="prim2-english">English Language</label>
+        </div>
+
+        <h4>YEAR 3</h4>
+        <div>
+          <input type="checkbox" id="year3-maths" name="subjects" value="Year 3 - Maths" />
+          <label for="year3-maths">Maths</label>
+        </div>
+        <div>
+          <input type="checkbox" id="year3-english" name="subjects" value="Year 3 - English Language" />
+          <label for="year3-english">English Language</label>
+        </div>
+
+        <h4>YEAR 4</h4>
+        <div>
+          <input type="checkbox" id="year4-maths" name="subjects" value="Year 4 - Maths" />
+          <label for="year4-maths">Maths</label>
+        </div>
+        <div>
+          <input type="checkbox" id="year4-english" name="subjects" value="Year 4 - English Language" />
+          <label for="year4-english">English Language</label>
+        </div>
+        <div>
+          <input type="checkbox" id="year4-verbal" name="subjects" value="Year 4 - Verbal Reasoning" />
+          <label for="year4-verbal">Verbal Reasoning</label>
+        </div>
+
+        <h4>YEAR 5 (11 PLUS PREP)</h4>
+        <div>
+          <input type="checkbox" id="year5-maths" name="subjects" value="Year 5 (11 Plus) - Maths" />
+          <label for="year5-maths">Maths</label>
+        </div>
+        <div>
+          <input type="checkbox" id="year5-english" name="subjects" value="Year 5 (11 Plus) - English Language" />
+          <label for="year5-english">English Language</label>
+        </div>
+        <div>
+          <input type="checkbox" id="year5-verbal" name="subjects" value="Year 5 (11 Plus) - Verbal Reasoning" />
+          <label for="year5-verbal">Verbal Reasoning</label>
+        </div>
+        <div>
+          <input type="checkbox" id="year5-nonverbal" name="subjects" value="Year 5 (11 Plus) - Non-verbal Reasoning" />
+          <label for="year5-nonverbal">Non-verbal Reasoning</label>
+        </div>
+
+        <h4>YEAR 6 (SATS)</h4>
+        <div>
+          <input type="checkbox" id="year6-maths" name="subjects" value="Year 6 (SATs) - Maths" />
+          <label for="year6-maths">Maths</label>
+        </div>
+        <div>
+          <input type="checkbox" id="year6-english" name="subjects" value="Year 6 (SATs) - English Language" />
+          <label for="year6-english">English Language</label>
+        </div>
+
+        <h3>SECONDARY SCHOOL</h3>
+
+        <!-- YEAR 7 -->
+        <h4>YEAR 7</h4>
+        <div>
+          <input type="checkbox" id="year7-maths" name="subjects" value="Year 7 - Maths" />
+          <label for="year7-maths">Maths</label>
+        </div>
+        <div>
+          <input type="checkbox" id="year7-physics" name="subjects" value="Year 7 - Physics" />
+          <label for="year7-physics">Physics</label>
+        </div>
+        <div>
+          <input type="checkbox" id="year7-chemistry" name="subjects" value="Year 7 - Chemistry" />
+          <label for="year7-chemistry">Chemistry</label>
+        </div>
+        <div>
+          <input type="checkbox" id="year7-biology" name="subjects" value="Year 7 - Biology" />
+          <label for="year7-biology">Biology</label>
+        </div>
+
+        <!-- YEAR 8 -->
+        <h4>YEAR 8</h4>
+        <div>
+          <input type="checkbox" id="year8-maths" name="subjects" value="Year 8 - Maths" />
+          <label for="year8-maths">Maths</label>
+        </div>
+        <div>
+          <input type="checkbox" id="year8-physics" name="subjects" value="Year 8 - Physics" />
+          <label for="year8-physics">Physics</label>
+        </div>
+        <div>
+          <input type="checkbox" id="year8-chemistry" name="subjects" value="Year 8 - Chemistry" />
+          <label for="year8-chemistry">Chemistry</label>
+        </div>
+        <div>
+          <input type="checkbox" id="year8-biology" name="subjects" value="Year 8 - Biology" />
+          <label for="year8-biology">Biology</label>
+        </div>
+
+        <!-- YEAR 9 -->
+        <h4>YEAR 9</h4>
+        <div>
+          <input type="checkbox" id="year9-maths" name="subjects" value="Year 9 - Maths" />
+          <label for="year9-maths">Maths</label>
+        </div>
+        <div>
+          <input type="checkbox" id="year9-physics" name="subjects" value="Year 9 - Physics" />
+          <label for="year9-physics">Physics</label>
+        </div>
+        <div>
+          <input type="checkbox" id="year9-chemistry" name="subjects" value="Year 9 - Chemistry" />
+          <label for="year9-chemistry">Chemistry</label>
+        </div>
+        <div>
+          <input type="checkbox" id="year9-biology" name="subjects" value="Year 9 - Biology" />
+          <label for="year9-biology">Biology</label>
+        </div>
+
+        <!-- YEAR 10 -->
+        <h4>YEAR 10</h4>
+        <div>
+          <input type="checkbox" id="year10-maths" name="subjects" value="Year 10 - Maths" />
+          <label for="year10-maths">Maths</label>
+        </div>
+        <div>
+          <input type="checkbox" id="year10-physics" name="subjects" value="Year 10 - Physics" />
+          <label for="year10-physics">Physics</label>
+        </div>
+        <div>
+          <input type="checkbox" id="year10-chemistry" name="subjects" value="Year 10 - Chemistry" />
+          <label for="year10-chemistry">Chemistry</label>
+        </div>
+        <div>
+          <input type="checkbox" id="year10-biology" name="subjects" value="Year 10 - Biology" />
+          <label for="year10-biology">Biology</label>
+        </div>
+
+        <!-- YEAR 11 -->
+        <h4>YEAR 11</h4>
+        <div>
+          <input type="checkbox" id="year11-maths" name="subjects" value="Year 11 - Maths" />
+          <label for="year11-maths">Maths</label>
+        </div>
+        <div>
+          <input type="checkbox" id="year11-physics" name="subjects" value="Year 11 - Physics" />
+          <label for="year11-physics">Physics</label>
+        </div>
+        <div>
+          <input type="checkbox" id="year11-chemistry" name="subjects" value="Year 11 - Chemistry" />
+          <label for="year11-chemistry">Chemistry</label>
+        </div>
+        <div>
+          <input type="checkbox" id="year11-biology" name="subjects" value="Year 11 - Biology" />
+          <label for="year11-biology">Biology</label>
+        </div>
+
+        <h3>A-LEVELS</h3>
+        <div>
+          <input type="checkbox" id="alevel-maths" name="subjects" value="A-Levels - Maths" />
+          <label for="alevel-maths">Maths</label>
+        </div>
+        <div>
+          <input type="checkbox" id="alevel-further-maths" name="subjects" value="A-Levels - Further Maths" />
+          <label for="alevel-further-maths">Further Maths</label>
+        </div>
+        <div>
+          <input type="checkbox" id="alevel-chemistry" name="subjects" value="A-Levels - Chemistry" />
+          <label for="alevel-chemistry">Chemistry</label>
+        </div>
+        <div>
+          <input type="checkbox" id="alevel-physics" name="subjects" value="A-Levels - Physics" />
+          <label for="alevel-physics">Physics</label>
+        </div>
+        <div>
+          <input type="checkbox" id="alevel-biology" name="subjects" value="A-Levels - Biology" />
+          <label for="alevel-biology">Biology</label>
+        </div>
+
+        <p id="subjects-error" role="alert" hidden>Select at least one subject/class.</p>
+      </fieldset>
+
+      <fieldset>
+        <legend>Additional Information</legend>
+        <p>
+          Does your child have any specific needs that our teachers may need to know about? If not,
+          please write 'No' or leave the box blank. If yes, please specify in the box below:
+        </p>
+        <label for="specificNeeds">Specific needs</label>
+        <textarea id="specificNeeds" name="specificNeeds" rows="4"></textarea>
+      </fieldset>
+
+      <fieldset>
+        <legend>How did you find out about us? *</legend>
+        <div>
+          <input type="radio" id="source-fliers" name="discoverySource" value="Fliers" required />
+          <label for="source-fliers">Fliers</label>
+        </div>
+        <div>
+          <input type="radio" id="source-social" name="discoverySource" value="Social media" />
+          <label for="source-social">Social media</label>
+        </div>
+        <div>
+          <input type="radio" id="source-family" name="discoverySource" value="Family/Friends" />
+          <label for="source-family">Family/Friends</label>
+        </div>
+        <div>
+          <input type="radio" id="source-mouth" name="discoverySource" value="Word of mouth" />
+          <label for="source-mouth">Word of mouth</label>
+        </div>
+        <div>
+          <input type="radio" id="source-search" name="discoverySource" value="Search Engine" />
+          <label for="source-search">Search Engine</label>
+        </div>
+      </fieldset>
+
+      <fieldset>
+        <legend>Confirmation</legend>
+        <div>
+          <input type="checkbox" id="confirm" name="confirm" required />
+          <label for="confirm">I confirm the information is correct. *</label>
+        </div>
+      </fieldset>
+
+      <button type="submit" id="submit-button">Submit Registration</button>
+      <p id="form-status" role="status" aria-live="polite"></p>
+    </form>
+  </main>
+
+  <script src="script.js"></script>
+</body>
+
+</html>

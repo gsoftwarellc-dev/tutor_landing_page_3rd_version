@@ -1,0 +1,719 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AceLab Tutors – Admin Dashboard</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <main>
+    <header class="admin-nav">
+      <div class="admin-brand">
+        <a class="admin-brand-link" href="/admin" aria-label="Ace Lab Tutors Admin">
+          <img src="/6.png" alt="Ace Lab Tutors logo" class="site-logo" />
+        </a>
+        <span class="admin-badge">Admin</span>
+      </div>
+      <div id="admin-actions" class="admin-nav-actions" hidden>
+        <button type="button" id="all-button" class="button-secondary">All Leads</button>
+        <button type="button" id="trash-button" class="button-secondary">Trash</button>
+        <button type="button" id="password-toggle" class="button-secondary">Change Password</button>
+        <button type="button" id="backup-button" class="button-secondary">Backup Now</button>
+        <a id="export-link" class="button-link" target="_blank" rel="noopener">Export CSV</a>
+        <button type="button" id="logout-button" class="button-secondary">Logout</button>
+      </div>
+    </header>
+    <section id="login-section" hidden>
+      <header>
+        <h1>Admin Login</h1>
+        <p>Enter your credentials to access the admin dashboard.</p>
+      </header>
+      <form id="admin-login-form" novalidate>
+        <div>
+          <label for="email">Email</label>
+          <input type="email" id="email" name="email" required />
+        </div>
+        <div>
+          <label for="password">Password</label>
+          <input type="password" id="password" name="password" required />
+        </div>
+        <button type="submit" id="login-button">Login</button>
+        <p id="login-status" role="status" aria-live="polite"></p>
+      </form>
+    </section>
+
+    <section id="dashboard" hidden>
+      <h1 id="page-title">Admin Dashboard</h1>
+
+      <section id="password-panel" hidden>
+        <h2>Change Password</h2>
+        <form id="password-form" novalidate>
+          <div>
+            <label for="current-password">Current password</label>
+            <input type="password" id="current-password" required />
+          </div>
+          <div>
+            <label for="new-password">New password</label>
+            <input type="password" id="new-password" minlength="8" required />
+          </div>
+          <div>
+            <label for="confirm-password">Confirm new password</label>
+            <input type="password" id="confirm-password" minlength="8" required />
+          </div>
+          <button type="submit" id="password-submit">Update Password</button>
+          <p id="password-status" role="status" aria-live="polite"></p>
+        </form>
+      </section>
+
+      <p id="status" role="status" aria-live="polite"></p>
+      <table>
+        <thead>
+          <tr>
+            <th>Date</th>
+            <th>Parent Name</th>
+            <th>Student Name</th>
+            <th>Parent Phone</th>
+            <th>Subjects</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody id="submissions-body"></tbody>
+      </table>
+    </section>
+  </main>
+
+  <script>
+    const loginSection = document.getElementById('login-section');
+    const dashboardSection = document.getElementById('dashboard');
+    const loginForm = document.getElementById('admin-login-form');
+    const loginStatus = document.getElementById('login-status');
+    const loginButton = document.getElementById('login-button');
+    const emailInput = document.getElementById('email');
+    const passwordInput = document.getElementById('password');
+
+    const titleEl = document.getElementById('page-title');
+    const statusEl = document.getElementById('status');
+    const tableBody = document.getElementById('submissions-body');
+    const exportLink = document.getElementById('export-link');
+    const logoutButton = document.getElementById('logout-button');
+    const trashButton = document.getElementById('trash-button');
+    const backupButton = document.getElementById('backup-button');
+    const adminActions = document.getElementById('admin-actions');
+    const allButton = document.getElementById('all-button');
+
+    const passwordToggle = document.getElementById('password-toggle');
+    const passwordPanel = document.getElementById('password-panel');
+    const passwordForm = document.getElementById('password-form');
+    const passwordStatus = document.getElementById('password-status');
+    const passwordSubmit = document.getElementById('password-submit');
+    const currentPasswordInput = document.getElementById('current-password');
+    const newPasswordInput = document.getElementById('new-password');
+    const confirmPasswordInput = document.getElementById('confirm-password');
+
+    let viewMode = 'active';
+
+    function getToken() {
+      return localStorage.getItem('adminToken');
+    }
+
+    function clearToken() {
+      localStorage.removeItem('adminToken');
+    }
+
+    function redirectToAdmin() {
+      window.location.href = '/admin';
+    }
+
+    function showLogin() {
+      loginSection.hidden = false;
+      dashboardSection.hidden = true;
+      if (adminActions) {
+        adminActions.hidden = true;
+      }
+      if (passwordPanel) {
+        passwordPanel.hidden = true;
+      }
+    }
+
+    function showDashboard() {
+      loginSection.hidden = true;
+      dashboardSection.hidden = false;
+      if (adminActions) {
+        adminActions.hidden = false;
+      }
+    }
+
+    function setLoginStatus(message, isError) {
+      loginStatus.textContent = message;
+      loginStatus.dataset.state = isError ? 'error' : 'success';
+    }
+
+    function setStatus(message, isError) {
+      if (!statusEl) {
+        return;
+      }
+      statusEl.textContent = message;
+      statusEl.dataset.state = isError ? 'error' : 'success';
+    }
+
+    function setPasswordStatus(message, isError) {
+      if (!passwordStatus) {
+        return;
+      }
+      passwordStatus.textContent = message;
+      passwordStatus.dataset.state = isError ? 'error' : 'success';
+    }
+
+    function formatDate(value) {
+      if (!value) {
+        return '';
+      }
+      const parsed = new Date(value);
+      if (Number.isNaN(parsed.getTime())) {
+        return value;
+      }
+      return parsed.toLocaleString();
+    }
+
+    function normalizeSubjects(value) {
+      if (Array.isArray(value)) {
+        return value.join(', ');
+      }
+      if (typeof value === 'string') {
+        return value;
+      }
+      return '';
+    }
+
+    function getSubmissionDate(submission) {
+      return submission.submittedAt || submission.createdAt || '';
+    }
+
+    function getSubmissionTimestamp(submission) {
+      const time = new Date(getSubmissionDate(submission)).getTime();
+      return Number.isNaN(time) ? 0 : time;
+    }
+
+    function updateHeader() {
+      if (viewMode === 'trash') {
+        titleEl.textContent = 'Trash';
+        trashButton.textContent = 'View Active';
+        allButton.textContent = 'All Leads';
+      } else if (viewMode === 'all') {
+        titleEl.textContent = 'All Leads';
+        trashButton.textContent = 'Trash';
+        allButton.textContent = 'View Active';
+      } else {
+        titleEl.textContent = 'Admin Dashboard';
+        trashButton.textContent = 'Trash';
+        allButton.textContent = 'All Leads';
+      }
+
+      trashButton.classList.toggle('is-active', viewMode === 'trash');
+      allButton.classList.toggle('is-active', viewMode === 'all');
+    }
+
+    function handleUnauthorized() {
+      clearToken();
+      redirectToAdmin();
+    }
+
+    async function trashSubmission(submissionId, buttonEl) {
+      const token = getToken();
+      if (!token) {
+        handleUnauthorized();
+        return;
+      }
+
+      const confirmed = window.confirm(
+        'Move this submission to trash? You can restore it later.'
+      );
+      if (!confirmed) {
+        return;
+      }
+
+      const originalText = buttonEl.textContent;
+      buttonEl.disabled = true;
+      buttonEl.textContent = 'Deleting...';
+      setStatus('', false);
+
+      try {
+        const response = await fetch(`/admin/submissions/${encodeURIComponent(submissionId)}`, {
+          method: 'DELETE',
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (response.status === 401) {
+          handleUnauthorized();
+          return;
+        }
+
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok || !data.ok) {
+          throw new Error('Failed to trash');
+        }
+
+        alert('Submission moved to trash');
+        fetchSubmissions();
+      } catch (error) {
+        setStatus('Unable to delete submission. Please try again.', true);
+      } finally {
+        buttonEl.disabled = false;
+        buttonEl.textContent = originalText;
+      }
+    }
+
+    async function restoreSubmission(submissionId, buttonEl) {
+      const token = getToken();
+      if (!token) {
+        handleUnauthorized();
+        return;
+      }
+
+      const confirmed = window.confirm('Restore this submission back to active list?');
+      if (!confirmed) {
+        return;
+      }
+
+      const originalText = buttonEl.textContent;
+      buttonEl.disabled = true;
+      buttonEl.textContent = 'Restoring...';
+      setStatus('', false);
+
+      try {
+        const response = await fetch(`/admin/submissions/${encodeURIComponent(submissionId)}/restore`, {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (response.status === 401) {
+          handleUnauthorized();
+          return;
+        }
+
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok || !data.restored) {
+          throw new Error('Failed to restore');
+        }
+
+        alert('Submission restored');
+        fetchSubmissions();
+      } catch (error) {
+        setStatus('Unable to restore submission. Please try again.', true);
+      } finally {
+        buttonEl.disabled = false;
+        buttonEl.textContent = originalText;
+      }
+    }
+
+    async function deletePermanently(submissionId, buttonEl) {
+      const token = getToken();
+      if (!token) {
+        handleUnauthorized();
+        return;
+      }
+
+      const confirmed = window.confirm(
+        'Permanently delete this submission? This action cannot be undone.'
+      );
+      if (!confirmed) {
+        return;
+      }
+
+      const originalText = buttonEl.textContent;
+      buttonEl.disabled = true;
+      buttonEl.textContent = 'Deleting...';
+      setStatus('', false);
+
+      try {
+        const response = await fetch(`/admin/submissions/${encodeURIComponent(submissionId)}/permanent`, {
+          method: 'DELETE',
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (response.status === 401) {
+          handleUnauthorized();
+          return;
+        }
+
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok || !data.deleted) {
+          throw new Error('Failed to delete');
+        }
+
+        alert('Submission permanently deleted');
+        fetchSubmissions();
+      } catch (error) {
+        setStatus('Unable to permanently delete submission. Please try again.', true);
+      } finally {
+        buttonEl.disabled = false;
+        buttonEl.textContent = originalText;
+      }
+    }
+
+    async function runBackup() {
+      const token = getToken();
+      if (!token) {
+        handleUnauthorized();
+        return;
+      }
+
+      const originalText = backupButton.textContent;
+      backupButton.disabled = true;
+      backupButton.textContent = 'Backing up...';
+      setStatus('', false);
+
+      try {
+        const response = await fetch('/admin/backup', {
+          method: 'POST',
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (response.status === 401) {
+          handleUnauthorized();
+          return;
+        }
+
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok || !data.ok) {
+          throw new Error('Backup failed');
+        }
+
+        setStatus('Backup created successfully', false);
+      } catch (error) {
+        setStatus('Unable to create backup. Please try again.', true);
+      } finally {
+        backupButton.disabled = false;
+        backupButton.textContent = originalText;
+      }
+    }
+
+    async function changePassword(event) {
+      event.preventDefault();
+      setPasswordStatus('', false);
+
+      const token = getToken();
+      if (!token) {
+        handleUnauthorized();
+        return;
+      }
+
+      const currentPassword = currentPasswordInput.value;
+      const newPassword = newPasswordInput.value;
+      const confirmPassword = confirmPasswordInput.value;
+
+      if (!currentPassword || !newPassword || !confirmPassword) {
+        setPasswordStatus('Please complete all password fields.', true);
+        return;
+      }
+
+      if (newPassword.length < 8) {
+        setPasswordStatus('New password must be at least 8 characters.', true);
+        return;
+      }
+
+      if (newPassword !== confirmPassword) {
+        setPasswordStatus('New passwords do not match.', true);
+        return;
+      }
+
+      const originalText = passwordSubmit.textContent;
+      passwordSubmit.disabled = true;
+      passwordSubmit.textContent = 'Updating...';
+
+      try {
+        const response = await fetch('/admin/change-password', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`,
+          },
+          body: JSON.stringify({
+            currentPassword,
+            newPassword,
+          }),
+        });
+
+        if (response.status === 401) {
+          handleUnauthorized();
+          return;
+        }
+
+        const data = await response.json().catch(() => ({}));
+        if (!response.ok) {
+          setPasswordStatus(data.error || 'Unable to change password.', true);
+          return;
+        }
+
+        setPasswordStatus('Password updated successfully. Please log in again.', false);
+        clearToken();
+        setTimeout(() => {
+          redirectToAdmin();
+        }, 800);
+      } catch (error) {
+        setPasswordStatus('Unable to change password. Please try again.', true);
+      } finally {
+        passwordSubmit.disabled = false;
+        passwordSubmit.textContent = originalText;
+      }
+    }
+
+    async function fetchSubmissions() {
+      const token = getToken();
+      if (!token) {
+        showLogin();
+        return;
+      }
+
+      showDashboard();
+      updateHeader();
+      exportLink.href = `/admin/export?token=${encodeURIComponent(token)}`;
+
+      if (viewMode === 'trash') {
+        setStatus('Loading trash...', false);
+      } else if (viewMode === 'all') {
+        setStatus('Loading all leads...', false);
+      } else {
+        setStatus('Loading submissions...', false);
+      }
+
+      try {
+        let query = '';
+        if (viewMode === 'trash') {
+          query = '?trashed=true';
+        } else if (viewMode === 'all') {
+          query = '?trashed=all';
+        }
+        const response = await fetch(`/admin/submissions${query}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (response.status === 401) {
+          handleUnauthorized();
+          return;
+        }
+
+        if (!response.ok) {
+          throw new Error('Failed to load');
+        }
+
+        const submissions = await response.json();
+        submissions.sort((a, b) => getSubmissionTimestamp(b) - getSubmissionTimestamp(a));
+
+        tableBody.innerHTML = '';
+
+        if (submissions.length === 0) {
+          if (viewMode === 'trash') {
+            setStatus('Trash is empty', false);
+          } else if (viewMode === 'all') {
+            setStatus('No leads yet', false);
+          } else {
+            setStatus('No submissions yet', false);
+          }
+          return;
+        }
+
+        submissions.forEach((submission) => {
+          const row = document.createElement('tr');
+
+          const dateCell = document.createElement('td');
+          dateCell.textContent = formatDate(getSubmissionDate(submission));
+
+          const parentCell = document.createElement('td');
+          parentCell.textContent = submission.parentName || '';
+
+          const studentCell = document.createElement('td');
+          studentCell.textContent = submission.studentName || '';
+
+          const phoneCell = document.createElement('td');
+          phoneCell.textContent = submission.parentPhone || '';
+
+          const subjectsCell = document.createElement('td');
+          subjectsCell.textContent = normalizeSubjects(submission.subjects);
+
+          const actionCell = document.createElement('td');
+          const actionWrapper = document.createElement('div');
+          actionWrapper.className = 'action-buttons';
+
+          if (viewMode === 'trash') {
+            const restoreButton = document.createElement('button');
+            restoreButton.type = 'button';
+            restoreButton.className = 'button-success';
+            restoreButton.textContent = 'Restore';
+            restoreButton.addEventListener('click', () => {
+              restoreSubmission(submission.id, restoreButton);
+            });
+            const deleteButton = document.createElement('button');
+            deleteButton.type = 'button';
+            deleteButton.className = 'button-danger';
+            deleteButton.textContent = 'Delete Permanently';
+            deleteButton.addEventListener('click', () => {
+              deletePermanently(submission.id, deleteButton);
+            });
+            actionWrapper.appendChild(restoreButton);
+            actionWrapper.appendChild(deleteButton);
+          } else if (viewMode === 'all') {
+            const isTrashed = submission.isTrashed === true || submission.isArchived === true;
+            if (isTrashed) {
+              const restoreButton = document.createElement('button');
+              restoreButton.type = 'button';
+              restoreButton.className = 'button-success';
+              restoreButton.textContent = 'Restore';
+              restoreButton.addEventListener('click', () => {
+                restoreSubmission(submission.id, restoreButton);
+              });
+              const deleteButton = document.createElement('button');
+              deleteButton.type = 'button';
+              deleteButton.className = 'button-danger';
+              deleteButton.textContent = 'Delete Permanently';
+              deleteButton.addEventListener('click', () => {
+                deletePermanently(submission.id, deleteButton);
+              });
+              actionWrapper.appendChild(restoreButton);
+              actionWrapper.appendChild(deleteButton);
+            } else {
+              const viewButton = document.createElement('button');
+              viewButton.type = 'button';
+              viewButton.textContent = 'View';
+              viewButton.addEventListener('click', () => {
+                const encodedId = encodeURIComponent(submission.id);
+                window.location.href = `/view.html?id=${encodedId}`;
+              });
+
+              const archiveButton = document.createElement('button');
+              archiveButton.type = 'button';
+              archiveButton.className = 'button-warning';
+              archiveButton.textContent = 'Delete';
+              archiveButton.addEventListener('click', () => {
+                trashSubmission(submission.id, archiveButton);
+              });
+
+              actionWrapper.appendChild(viewButton);
+              actionWrapper.appendChild(archiveButton);
+            }
+          } else {
+            const viewButton = document.createElement('button');
+            viewButton.type = 'button';
+            viewButton.textContent = 'View';
+            viewButton.addEventListener('click', () => {
+              const encodedId = encodeURIComponent(submission.id);
+              window.location.href = `/view.html?id=${encodedId}`;
+            });
+
+            const archiveButton = document.createElement('button');
+            archiveButton.type = 'button';
+            archiveButton.className = 'button-warning';
+            archiveButton.textContent = 'Delete';
+            archiveButton.addEventListener('click', () => {
+              trashSubmission(submission.id, archiveButton);
+            });
+
+            actionWrapper.appendChild(viewButton);
+            actionWrapper.appendChild(archiveButton);
+          }
+
+          actionCell.appendChild(actionWrapper);
+
+          row.appendChild(dateCell);
+          row.appendChild(parentCell);
+          row.appendChild(studentCell);
+          row.appendChild(phoneCell);
+          row.appendChild(subjectsCell);
+          row.appendChild(actionCell);
+          tableBody.appendChild(row);
+        });
+
+        setStatus('', false);
+      } catch (error) {
+        setStatus('Unable to load submissions. Please try again.', true);
+      }
+    }
+
+    if (loginForm) {
+      loginForm.addEventListener('submit', async (event) => {
+        event.preventDefault();
+        setLoginStatus('', false);
+
+        const email = emailInput.value.trim();
+        const password = passwordInput.value;
+
+        if (!email || !password) {
+          setLoginStatus('Please enter your email and password.', true);
+          return;
+        }
+
+        loginButton.disabled = true;
+        const originalText = loginButton.textContent;
+        loginButton.textContent = 'Signing in...';
+
+        try {
+          const response = await fetch('/admin/login', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({ email, password }),
+          });
+
+          const data = await response.json().catch(() => ({}));
+          if (!response.ok || !data.token) {
+            throw new Error('Login failed');
+          }
+
+          localStorage.setItem('adminToken', data.token);
+          window.location.href = '/admin';
+        } catch (error) {
+          setLoginStatus('Invalid email or password', true);
+        } finally {
+          loginButton.disabled = false;
+          loginButton.textContent = originalText;
+        }
+      });
+    }
+
+    if (passwordToggle) {
+      passwordToggle.addEventListener('click', () => {
+        const shouldShow = passwordPanel.hidden;
+        passwordPanel.hidden = !shouldShow;
+        if (shouldShow) {
+          passwordForm.reset();
+          setPasswordStatus('', false);
+        }
+      });
+    }
+
+    if (passwordForm) {
+      passwordForm.addEventListener('submit', changePassword);
+    }
+
+    if (backupButton) {
+      backupButton.addEventListener('click', runBackup);
+    }
+
+    trashButton.addEventListener('click', () => {
+      viewMode = viewMode === 'trash' ? 'active' : 'trash';
+      fetchSubmissions();
+    });
+
+    if (allButton) {
+      allButton.addEventListener('click', () => {
+        viewMode = viewMode === 'all' ? 'active' : 'all';
+        fetchSubmissions();
+      });
+    }
+
+    logoutButton.addEventListener('click', () => {
+      clearToken();
+      window.location.href = '/admin';
+    });
+
+    if (getToken()) {
+      fetchSubmissions();
+    } else {
+      showLogin();
+    }
+  </script>
+</body>
+
+</html>

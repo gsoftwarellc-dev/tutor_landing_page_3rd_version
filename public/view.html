@@ -1,0 +1,246 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>AceLab Tutors – Submission Details</title>
+  <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+  <main>
+    <header class="admin-nav">
+      <div class="admin-brand">
+        <a class="admin-brand-link" href="/admin" aria-label="Ace Lab Tutors Admin">
+          <img src="/6.png" alt="Ace Lab Tutors logo" class="site-logo" />
+        </a>
+        <span class="admin-badge">Admin</span>
+      </div>
+      <div class="admin-nav-actions">
+        <button type="button" id="back-button" class="button-secondary">Back to Dashboard</button>
+        <button type="button" id="logout-button" class="button-secondary">Logout</button>
+      </div>
+    </header>
+
+    <h1>Submission Details</h1>
+
+    <p id="status" role="status" aria-live="polite">Loading submission...</p>
+
+    <section id="detail" hidden>
+      <section>
+        <h2>Parent / Guardian</h2>
+        <dl>
+          <div>
+            <dt>Parent/Guardian Name</dt>
+            <dd id="detail-parent-name"></dd>
+          </div>
+          <div>
+            <dt>Relationship to student</dt>
+            <dd id="detail-relationship"></dd>
+          </div>
+          <div>
+            <dt>Parent/Guardian Email</dt>
+            <dd id="detail-parent-email"></dd>
+          </div>
+          <div>
+            <dt>Parent/Guardian Phone</dt>
+            <dd id="detail-parent-phone"></dd>
+          </div>
+        </dl>
+      </section>
+
+      <section>
+        <h2>Student</h2>
+        <dl>
+          <div>
+            <dt>Student Name</dt>
+            <dd id="detail-student-name"></dd>
+          </div>
+          <div>
+            <dt>Student Email</dt>
+            <dd id="detail-student-email"></dd>
+          </div>
+          <div>
+            <dt>Student Date of Birth</dt>
+            <dd id="detail-student-dob"></dd>
+          </div>
+        </dl>
+      </section>
+
+      <section>
+        <h2>Subjects Selected</h2>
+        <ul id="detail-subjects"></ul>
+      </section>
+
+      <section>
+        <h2>Additional Information</h2>
+        <dl>
+          <div>
+            <dt>Specific needs</dt>
+            <dd id="detail-needs"></dd>
+          </div>
+        </dl>
+      </section>
+
+      <section>
+        <h2>Discovery Source</h2>
+        <dl>
+          <div>
+            <dt>How did you find out about us?</dt>
+            <dd id="detail-source"></dd>
+          </div>
+        </dl>
+      </section>
+
+      <section>
+        <h2>Submission Info</h2>
+        <dl>
+          <div>
+            <dt>Submission Date &amp; Time</dt>
+            <dd id="detail-submitted-at"></dd>
+          </div>
+        </dl>
+      </section>
+    </section>
+  </main>
+
+  <script>
+    const token = localStorage.getItem('adminToken');
+    const statusEl = document.getElementById('status');
+    const detailSection = document.getElementById('detail');
+    const backButton = document.getElementById('back-button');
+    const logoutButton = document.getElementById('logout-button');
+    const subjectsList = document.getElementById('detail-subjects');
+
+    function redirectToLogin() {
+      localStorage.removeItem('adminToken');
+      window.location.href = '/admin';
+    }
+
+    function setStatus(message, isError) {
+      statusEl.textContent = message;
+      statusEl.dataset.state = isError ? 'error' : 'success';
+    }
+
+    function formatDate(value) {
+      if (!value) {
+        return '';
+      }
+      const parsed = new Date(value);
+      if (Number.isNaN(parsed.getTime())) {
+        return value;
+      }
+      return parsed.toLocaleString();
+    }
+
+    function normalizeSubjects(value) {
+      if (Array.isArray(value)) {
+        return value;
+      }
+      if (typeof value === 'string' && value.trim() !== '') {
+        return [value];
+      }
+      return [];
+    }
+
+    function getSubmissionDate(data) {
+      return data.submittedAt || data.createdAt || '';
+    }
+
+    function getRelationship(data) {
+      return data.relationshipToStudent || data.relationship || '';
+    }
+
+    function getSpecificNeeds(data) {
+      const text = data.specificNeedsText || data.specificNeeds || '';
+      return text.trim() === '' ? 'No' : text;
+    }
+
+    function renderSubjects(subjects) {
+      subjectsList.innerHTML = '';
+      const list = normalizeSubjects(subjects);
+      if (list.length === 0) {
+        const item = document.createElement('li');
+        item.textContent = 'No subjects listed.';
+        subjectsList.appendChild(item);
+        return;
+      }
+      list.forEach((subject) => {
+        const item = document.createElement('li');
+        item.textContent = subject;
+        subjectsList.appendChild(item);
+      });
+    }
+
+    async function loadSubmission() {
+      if (!token) {
+        redirectToLogin();
+        return;
+      }
+
+      const params = new URLSearchParams(window.location.search);
+      const submissionId = params.get('id');
+      if (!submissionId) {
+        setStatus('Missing submission id.', true);
+        return;
+      }
+
+      setStatus('Loading submission...', false);
+      detailSection.hidden = true;
+
+      try {
+        const response = await fetch(`/admin/submissions/${encodeURIComponent(submissionId)}`, {
+          headers: { Authorization: `Bearer ${token}` },
+        });
+
+        if (response.status === 401) {
+          redirectToLogin();
+          return;
+        }
+
+        if (response.status === 404) {
+          setStatus('Submission not found.', true);
+          return;
+        }
+
+        if (!response.ok) {
+          throw new Error('Failed to load');
+        }
+
+        const data = await response.json();
+
+        document.getElementById('detail-parent-name').textContent = data.parentName || '';
+        document.getElementById('detail-relationship').textContent = getRelationship(data);
+        document.getElementById('detail-parent-email').textContent = data.parentEmail || '';
+        document.getElementById('detail-parent-phone').textContent = data.parentPhone || '';
+        document.getElementById('detail-student-name').textContent = data.studentName || '';
+        document.getElementById('detail-student-email').textContent = data.studentEmail || '';
+        document.getElementById('detail-student-dob').textContent = data.studentDob || '';
+        document.getElementById('detail-needs').textContent = getSpecificNeeds(data);
+        document.getElementById('detail-source').textContent = data.discoverySource || '';
+        document.getElementById('detail-submitted-at').textContent = formatDate(getSubmissionDate(data));
+
+        renderSubjects(data.subjects);
+
+        detailSection.hidden = false;
+        setStatus('', false);
+      } catch (error) {
+        setStatus('Unable to load submission. Please try again.', true);
+      }
+    }
+
+    backButton.addEventListener('click', () => {
+      window.location.href = '/admin';
+    });
+
+    logoutButton.addEventListener('click', () => {
+      localStorage.removeItem('adminToken');
+      window.location.href = '/admin';
+    });
+
+    loadSubmission();
+  </script>
+</body>
+
+</html>
