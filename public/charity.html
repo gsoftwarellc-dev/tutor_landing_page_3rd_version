@@ -1,0 +1,171 @@
+<!doctype html>
+<html lang="en">
+
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Winners Kingdom Children – Charity Class Registration</title>
+    <link rel="stylesheet" href="style.css" />
+</head>
+
+<body>
+    <nav class="main-nav">
+        <ul>
+            <li><a href="/">Student Registration</a></li>
+            <li><a href="/charity" class="active">Charity Registration</a></li>
+            <li><a href="/teachers.html">Meet the Teachers</a></li>
+            <li><a href="/classes.html">Live Classes</a></li>
+        </ul>
+    </nav>
+
+    <main>
+        <header class="page-header">
+            <img src="/6.png" alt="Ace Lab Tutors logo" class="site-logo" />
+            <h1>Winners Kingdom Children</h1>
+            <h2>Charity Class Registration (Year 8-11)</h2>
+            <p class="highlight-text">
+                <strong>Free Classes - SATURDAYS ONLY</strong>
+            </p>
+            <p>
+                Please complete the form below to register your student for our charity program. Fields marked with *
+                are required.
+            </p>
+        </header>
+
+        <form id="registration-form" novalidate>
+            <p aria-hidden="true">* Required fields</p>
+
+            <fieldset>
+                <legend>Parent/Guardian</legend>
+
+                <div>
+                    <label for="parentName">Parent/Guardian Name *</label>
+                    <input type="text" id="parentName" name="parentName" autocomplete="name" required />
+                </div>
+
+                <div>
+                    <label for="relationship">Relationship to student</label>
+                    <input type="text" id="relationship" name="relationship" autocomplete="off" />
+                </div>
+
+                <div>
+                    <label for="parentEmail">Parent/Guardian Email *</label>
+                    <input type="email" id="parentEmail" name="parentEmail" autocomplete="email" required />
+                </div>
+
+                <div>
+                    <label for="parentPhone">Parent/Guardian Phone Number *</label>
+                    <input type="tel" id="parentPhone" name="parentPhone" autocomplete="tel" required />
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend>Student</legend>
+
+                <div>
+                    <label for="studentName">Student Name *</label>
+                    <input type="text" id="studentName" name="studentName" autocomplete="name" required />
+                </div>
+
+                <div>
+                    <label for="studentDob">Student Date of Birth *</label>
+                    <input type="date" id="studentDob" name="studentDob" required />
+                </div>
+
+                <div>
+                    <label for="studentEmail">Student Email</label>
+                    <input type="email" id="studentEmail" name="studentEmail" autocomplete="email" />
+                </div>
+            </fieldset>
+
+            <fieldset>
+                <legend>Class & Subject Selection (Saturdays Only) *</legend>
+
+                <h3>SECONDARY SCHOOL (YEAR 8 - 11)</h3>
+                <p><em>Winners Kingdom Children free classes are available for Maths and Sciences only.</em></p>
+
+                <!-- YEAR 8 -->
+                <h4>YEAR 8</h4>
+                <div>
+                    <input type="checkbox" id="year8-maths" name="subjects" value="Year 8 - Maths (Charity)" />
+                    <label for="year8-maths">Maths</label>
+                </div>
+                <div>
+                    <input type="checkbox" id="year8-physics" name="subjects" value="Year 8 - Physics (Charity)" />
+                    <label for="year8-physics">Physics</label>
+                </div>
+
+
+
+                <!-- YEAR 9 -->
+                <h4>YEAR 9</h4>
+                <div>
+                    <input type="checkbox" id="year9-maths" name="subjects" value="Year 9 - Maths (Charity)" />
+                    <label for="year9-maths">Maths</label>
+                </div>
+                <div>
+                    <input type="checkbox" id="year9-physics" name="subjects" value="Year 9 - Physics (Charity)" />
+                    <label for="year9-physics">Physics</label>
+                </div>
+
+
+
+                <!-- YEAR 10 -->
+                <h4>YEAR 10</h4>
+                <div>
+                    <input type="checkbox" id="year10-maths" name="subjects" value="Year 10 - Maths (Charity)" />
+                    <label for="year10-maths">Maths</label>
+                </div>
+                <div>
+                    <input type="checkbox" id="year10-physics" name="subjects" value="Year 10 - Physics (Charity)" />
+                    <label for="year10-physics">Physics</label>
+                </div>
+
+
+
+                <!-- YEAR 11 -->
+                <h4>YEAR 11</h4>
+                <div>
+                    <input type="checkbox" id="year11-maths" name="subjects" value="Year 11 - Maths (Charity)" />
+                    <label for="year11-maths">Maths</label>
+                </div>
+                <div>
+                    <input type="checkbox" id="year11-physics" name="subjects" value="Year 11 - Physics (Charity)" />
+                    <label for="year11-physics">Physics</label>
+                </div>
+
+
+
+                <p id="subjects-error" role="alert" hidden>Select at least one subject/class.</p>
+            </fieldset>
+
+            <fieldset>
+                <legend>Additional Information</legend>
+                <p>
+                    Does your child have any specific needs that our teachers may need to know about? If not,
+                    please write 'No' or leave the box blank. If yes, please specify in the box below:
+                </p>
+                <label for="specificNeeds">Specific needs</label>
+                <textarea id="specificNeeds" name="specificNeeds" rows="4"></textarea>
+            </fieldset>
+
+            <fieldset>
+                <legend>Confirmation</legend>
+                <div>
+                    <input type="checkbox" id="confirm" name="confirm" required />
+                    <label for="confirm">I confirm the information is correct. *</label>
+                </div>
+            </fieldset>
+
+            <!-- HIDDEN FIELD TO IDENTIFY CHARITY SUBMISSION -->
+            <input type="hidden" name="isCharity" value="true" />
+
+            <button type="submit" id="submit-button">Submit Registration</button>
+            <p id="form-status" role="status" aria-live="polite"></p>
+        </form>
+    </main>
+
+    <script src="script.js"></script>
+</body>
+
+</html>

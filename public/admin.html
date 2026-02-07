@@ -6,84 +6,150 @@
   <meta name="viewport" content="width=device-width, initial-scale=1" />
   <title>AceLab Tutors – Admin Dashboard</title>
   <link rel="stylesheet" href="style.css" />
+  <link rel="stylesheet" href="admin.css" />
 </head>
 
 <body>
-  <main>
-    <header class="admin-nav">
-      <div class="admin-brand">
-        <a class="admin-brand-link" href="/admin" aria-label="Ace Lab Tutors Admin">
-          <img src="/6.png" alt="Ace Lab Tutors logo" class="site-logo" />
-        </a>
-        <span class="admin-badge">Admin</span>
-      </div>
-      <div id="admin-actions" class="admin-nav-actions" hidden>
-        <button type="button" id="all-button" class="button-secondary">All Leads</button>
-        <button type="button" id="trash-button" class="button-secondary">Trash</button>
-        <button type="button" id="password-toggle" class="button-secondary">Change Password</button>
-        <button type="button" id="backup-button" class="button-secondary">Backup Now</button>
-        <a id="export-link" class="button-link" target="_blank" rel="noopener">Export CSV</a>
-        <button type="button" id="logout-button" class="button-secondary">Logout</button>
-      </div>
-    </header>
-    <section id="login-section" hidden>
-      <header>
-        <h1>Admin Login</h1>
-        <p>Enter your credentials to access the admin dashboard.</p>
-      </header>
-      <form id="admin-login-form" novalidate>
-        <div>
-          <label for="email">Email</label>
-          <input type="email" id="email" name="email" required />
-        </div>
-        <div>
-          <label for="password">Password</label>
-          <input type="password" id="password" name="password" required />
-        </div>
-        <button type="submit" id="login-button">Login</button>
-        <p id="login-status" role="status" aria-live="polite"></p>
-      </form>
-    </section>
-
-    <section id="dashboard" hidden>
-      <h1 id="page-title">Admin Dashboard</h1>
-
-      <section id="password-panel" hidden>
-        <h2>Change Password</h2>
-        <form id="password-form" novalidate>
+  <div id="full-app">
+    <!-- Login Section (Centered) -->
+    <section id="login-section" class="login-container" hidden>
+      <div class="login-box">
+        <header class="mb-4" style="text-align: center;">
+          <img src="/6.png" alt="Ace Lab Tutors" style="height: 50px; margin-bottom: 20px;">
+          <h1>Admin Login</h1>
+          <p class="text-secondary">Enter your credentials to access the dashboard.</p>
+        </header>
+        <form id="admin-login-form" novalidate>
           <div>
-            <label for="current-password">Current password</label>
-            <input type="password" id="current-password" required />
+            <label for="email">Email</label>
+            <input type="email" id="email" name="email" required placeholder="admin@acelab.com" />
           </div>
           <div>
-            <label for="new-password">New password</label>
-            <input type="password" id="new-password" minlength="8" required />
+            <label for="password">Password</label>
+            <input type="password" id="password" name="password" required />
           </div>
-          <div>
-            <label for="confirm-password">Confirm new password</label>
-            <input type="password" id="confirm-password" minlength="8" required />
-          </div>
-          <button type="submit" id="password-submit">Update Password</button>
-          <p id="password-status" role="status" aria-live="polite"></p>
+          <button type="submit" id="login-button" class="btn btn-primary" style="width: 100%; margin-top: 10px;">Sign
+            In</button>
+          <p id="login-status" role="status" aria-live="polite"></p>
         </form>
-      </section>
-
-      <p id="status" role="status" aria-live="polite"></p>
-      <table>
-        <thead>
-          <tr>
-            <th>Date</th>
-            <th>Parent Name</th>
-            <th>Student Name</th>
-            <th>Parent Phone</th>
-            <th>Subjects</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody id="submissions-body"></tbody>
-      </table>
+      </div>
     </section>
-  </main>
+
+    <!-- Dashboard Layout (Sidebar + Content) -->
+    <div id="dashboard" class="dashboard-layout" hidden>
+      <aside class="sidebar">
+        <div class="sidebar-brand">
+          <img src="/6.png" class="sidebar-logo" alt="Logo">
+          <span class="brand-text">AceLab Admin</span>
+        </div>
+
+        <nav class="nav-menu">
+          <button type="button" id="all-button" class="nav-item active">
+            <span>📂</span><span>All Leads</span>
+          </button>
+          <button type="button" id="standard-button" class="nav-item">
+            <span>🎓</span><span>Standard Leads</span>
+          </button>
+          <button type="button" id="charity-button" class="nav-item">
+            <span>🎗️</span><span>Charity Leads</span>
+          </button>
+          <button type="button" id="courses-toggle" class="nav-item">
+            <span>📚</span><span>Courses</span>
+          </button>
+          <button type="button" id="password-toggle" class="nav-item">
+            <span>🔒</span><span>Security</span>
+          </button>
+          <button type="button" id="trash-button" class="nav-item">
+            <span>🗑</span><span>Trash</span>
+          </button>
+          <button type="button" id="backup-button" class="nav-item">
+            <span>💾</span><span>Backup Data</span>
+          </button>
+          <div style="flex: 1;"></div>
+          <button type="button" id="logout-button" class="nav-item danger">
+            <span>🚪</span><span>Logout</span>
+          </button>
+        </nav>
+      </aside>
+
+      <main class="main-content">
+        <header class="topbar">
+          <div class="topbar-title" id="page-title">Dashboard</div>
+          <div class="user-profile">
+            <span class="admin-badge">Super Admin</span>
+          </div>
+        </header>
+
+        <div class="content-scroll">
+
+          <!-- Password Panel -->
+          <section id="password-panel" class="card" hidden>
+            <h2>Change Password</h2>
+            <form id="password-form" novalidate style="max-width: 400px;">
+              <div>
+                <label for="current-password">Current password</label>
+                <input type="password" id="current-password" required />
+              </div>
+              <div>
+                <label for="new-password">New password</label>
+                <input type="password" id="new-password" minlength="8" required />
+              </div>
+              <div>
+                <label for="confirm-password">Confirm new password</label>
+                <input type="password" id="confirm-password" minlength="8" required />
+              </div>
+              <button type="submit" id="password-submit" class="btn btn-primary">Update Password</button>
+              <p id="password-status" role="status" aria-live="polite"></p>
+            </form>
+          </section>
+
+          <!-- Course Management Panel -->
+          <section id="course-management-panel" class="card" hidden>
+            <div class="flex-between mb-4">
+              <h2>Course Management</h2>
+              <div class="course-controls" style="display: flex; gap: 10px;">
+                <button id="refresh-courses" type="button" class="btn btn-secondary">Refresh</button>
+                <button id="save-courses" type="button" class="btn btn-primary">Save Changes</button>
+              </div>
+            </div>
+            <p id="course-status" role="status" aria-live="polite"></p>
+            <div id="course-list-container" class="course-grid">
+              <!-- Course list will be rendered here -->
+            </div>
+          </section>
+
+          <!-- Main Submissions Table -->
+          <section id="submissions-panel">
+            <div class="flex-between mb-4">
+              <div class="stats-grid" style="display: none;"></div> <!-- Placeholder -->
+              <a id="export-link" class="btn btn-secondary" target="_blank" rel="noopener">📥 Export CSV</a>
+            </div>
+
+            <p id="status" role="status" aria-live="polite" class="mb-4"></p>
+
+            <div class="card" style="padding: 0; overflow: hidden;">
+              <div class="table-container">
+                <table>
+                  <thead>
+                    <tr>
+                      <th>Date</th>
+                      <th>Parent Name</th>
+                      <th>Student Name</th>
+                      <th>Parent Phone</th>
+                      <th>Subjects</th>
+                      <th>Action</th>
+                    </tr>
+                  </thead>
+                  <tbody id="submissions-body"></tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+
+        </div>
+      </main>
+    </div>
+  </div>
 
   <script>
     const loginSection = document.getElementById('login-section');
@@ -101,8 +167,10 @@
     const logoutButton = document.getElementById('logout-button');
     const trashButton = document.getElementById('trash-button');
     const backupButton = document.getElementById('backup-button');
-    const adminActions = document.getElementById('admin-actions');
+    // const adminActions = document.getElementById('admin-actions'); // RE MOVED in new layout
     const allButton = document.getElementById('all-button');
+    const standardButton = document.getElementById('standard-button');
+    const charityButton = document.getElementById('charity-button');
 
     const passwordToggle = document.getElementById('password-toggle');
     const passwordPanel = document.getElementById('password-panel');
@@ -112,6 +180,16 @@
     const currentPasswordInput = document.getElementById('current-password');
     const newPasswordInput = document.getElementById('new-password');
     const confirmPasswordInput = document.getElementById('confirm-password');
+
+    const coursesToggle = document.getElementById('courses-toggle');
+    const coursePanel = document.getElementById('course-management-panel');
+    const courseListContainer = document.getElementById('course-list-container');
+    const saveCoursesBtn = document.getElementById('save-courses');
+    const refreshCoursesBtn = document.getElementById('refresh-courses');
+    const courseStatus = document.getElementById('course-status');
+    const submissionsPanel = document.getElementById('submissions-panel');
+
+    let loadedCourses = [];
 
     let viewMode = 'active';
 
@@ -130,25 +208,18 @@
     function showLogin() {
       loginSection.hidden = false;
       dashboardSection.hidden = true;
-      if (adminActions) {
-        adminActions.hidden = true;
-      }
-      if (passwordPanel) {
-        passwordPanel.hidden = true;
-      }
     }
 
     function showDashboard() {
       loginSection.hidden = true;
       dashboardSection.hidden = false;
-      if (adminActions) {
-        adminActions.hidden = false;
-      }
     }
 
     function setLoginStatus(message, isError) {
-      loginStatus.textContent = message;
-      loginStatus.dataset.state = isError ? 'error' : 'success';
+      if (loginStatus) {
+        loginStatus.textContent = message;
+        loginStatus.dataset.state = isError ? 'error' : 'success';
+      }
     }
 
     function setStatus(message, isError) {
@@ -197,23 +268,101 @@
       return Number.isNaN(time) ? 0 : time;
     }
 
+    // View Switching Logic
+    function hideAllPanels() {
+      if (submissionsPanel) submissionsPanel.hidden = true;
+      if (passwordPanel) passwordPanel.hidden = true;
+      if (coursePanel) coursePanel.hidden = true;
+
+      // Reset nav active states
+      document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+    }
+
     function updateHeader() {
+      // Logic moved to button clicks primarily
       if (viewMode === 'trash') {
         titleEl.textContent = 'Trash';
-        trashButton.textContent = 'View Active';
-        allButton.textContent = 'All Leads';
+        trashButton.classList.add('active');
       } else if (viewMode === 'all') {
         titleEl.textContent = 'All Leads';
-        trashButton.textContent = 'Trash';
-        allButton.textContent = 'View Active';
+        allButton.classList.add('active');
+      } else if (viewMode === 'standard') {
+        titleEl.textContent = 'Standard Leads';
+        standardButton.classList.add('active');
+      } else if (viewMode === 'charity') {
+        titleEl.textContent = 'Charity Leads';
+        charityButton.classList.add('active');
+      } else if (viewMode === 'courses') {
+        titleEl.textContent = 'Course Management';
+        coursesToggle.classList.add('active');
+      } else if (viewMode === 'password') {
+        titleEl.textContent = 'Security';
+        passwordToggle.classList.add('active');
       } else {
-        titleEl.textContent = 'Admin Dashboard';
-        trashButton.textContent = 'Trash';
-        allButton.textContent = 'All Leads';
+        titleEl.textContent = 'Dashboard';
+        allButton.classList.add('active'); // Default
       }
+    }
 
-      trashButton.classList.toggle('is-active', viewMode === 'trash');
-      allButton.classList.toggle('is-active', viewMode === 'all');
+    function switchToSubmissions(mode) {
+      viewMode = mode;
+      hideAllPanels();
+      submissionsPanel.hidden = false;
+      updateHeader();
+      fetchSubmissions();
+    }
+
+    if (allButton) {
+      allButton.addEventListener('click', () => {
+        switchToSubmissions('all');
+      });
+    }
+
+    if (standardButton) {
+      standardButton.addEventListener('click', () => {
+        switchToSubmissions('standard');
+      });
+    }
+
+    if (charityButton) {
+      charityButton.addEventListener('click', () => {
+        switchToSubmissions('charity');
+      });
+    }
+
+    if (trashButton) {
+      trashButton.addEventListener('click', () => {
+        switchToSubmissions('trash');
+      });
+    }
+
+    if (passwordToggle) {
+      passwordToggle.addEventListener('click', () => {
+        viewMode = 'password';
+        hideAllPanels();
+        passwordPanel.hidden = false;
+        updateHeader();
+      });
+    }
+
+    if (coursesToggle) {
+      coursesToggle.addEventListener('click', () => {
+        viewMode = 'courses';
+        hideAllPanels();
+        coursePanel.hidden = false;
+        updateHeader();
+        loadCourses();
+      });
+    }
+
+    if (logoutButton) {
+      logoutButton.addEventListener('click', () => {
+        const confirmLogout = window.confirm('Are you sure you want to log out?');
+        if (confirmLogout) {
+          clearToken();
+          redirectToAdmin();
+        }
+      });
     }
 
     function handleUnauthorized() {
@@ -256,7 +405,7 @@
           throw new Error('Failed to trash');
         }
 
-        alert('Submission moved to trash');
+        // alert('Submission moved to trash');
         fetchSubmissions();
       } catch (error) {
         setStatus('Unable to delete submission. Please try again.', true);
@@ -299,7 +448,7 @@
           throw new Error('Failed to restore');
         }
 
-        alert('Submission restored');
+        // alert('Submission restored');
         fetchSubmissions();
       } catch (error) {
         setStatus('Unable to restore submission. Please try again.', true);
@@ -344,7 +493,7 @@
           throw new Error('Failed to delete');
         }
 
-        alert('Submission permanently deleted');
+        // alert('Submission permanently deleted');
         fetchSubmissions();
       } catch (error) {
         setStatus('Unable to permanently delete submission. Please try again.', true);
@@ -389,6 +538,10 @@
         backupButton.disabled = false;
         backupButton.textContent = originalText;
       }
+    }
+
+    if (backupButton) {
+      backupButton.addEventListener('click', runBackup);
     }
 
     async function changePassword(event) {
@@ -461,6 +614,10 @@
       }
     }
 
+    if (passwordForm) {
+      passwordForm.addEventListener('submit', changePassword);
+    }
+
     async function fetchSubmissions() {
       const token = getToken();
       if (!token) {
@@ -469,7 +626,7 @@
       }
 
       showDashboard();
-      updateHeader();
+      // updateHeader(); // Handled by switch
       exportLink.href = `/admin/export?token=${encodeURIComponent(token)}`;
 
       if (viewMode === 'trash') {
@@ -486,6 +643,10 @@
           query = '?trashed=true';
         } else if (viewMode === 'all') {
           query = '?trashed=all';
+        } else if (viewMode === 'standard') {
+          query = '?type=standard';
+        } else if (viewMode === 'charity') {
+          query = '?type=charity';
         }
         const response = await fetch(`/admin/submissions${query}`, {
           headers: { Authorization: `Bearer ${token}` },
@@ -508,6 +669,10 @@
         if (submissions.length === 0) {
           if (viewMode === 'trash') {
             setStatus('Trash is empty', false);
+          } else if (viewMode === 'standard') {
+            setStatus('No standard leads found', false);
+          } else if (viewMode === 'charity') {
+            setStatus('No charity leads found', false);
           } else if (viewMode === 'all') {
             setStatus('No leads yet', false);
           } else {
@@ -532,7 +697,7 @@
           phoneCell.textContent = submission.parentPhone || '';
 
           const subjectsCell = document.createElement('td');
-          subjectsCell.textContent = normalizeSubjects(submission.subjects);
+          subjectsCell.innerHTML = `<span class="badge badge-gray">${normalizeSubjects(submission.subjects).substring(0, 30)}...</span>`;
 
           const actionCell = document.createElement('td');
           const actionWrapper = document.createElement('div');
@@ -541,15 +706,15 @@
           if (viewMode === 'trash') {
             const restoreButton = document.createElement('button');
             restoreButton.type = 'button';
-            restoreButton.className = 'button-success';
-            restoreButton.textContent = 'Restore';
+            restoreButton.className = 'btn btn-success'; // Updated class
+            restoreButton.innerHTML = '♻️ Restore';
             restoreButton.addEventListener('click', () => {
               restoreSubmission(submission.id, restoreButton);
             });
             const deleteButton = document.createElement('button');
             deleteButton.type = 'button';
-            deleteButton.className = 'button-danger';
-            deleteButton.textContent = 'Delete Permanently';
+            deleteButton.className = 'btn btn-danger'; // Updated class
+            deleteButton.innerHTML = '🗑 Delete';
             deleteButton.addEventListener('click', () => {
               deletePermanently(submission.id, deleteButton);
             });
@@ -560,23 +725,17 @@
             if (isTrashed) {
               const restoreButton = document.createElement('button');
               restoreButton.type = 'button';
-              restoreButton.className = 'button-success';
-              restoreButton.textContent = 'Restore';
+              restoreButton.className = 'btn btn-success';
+              restoreButton.innerHTML = '♻️';
+              restoreButton.title = "Restore";
               restoreButton.addEventListener('click', () => {
                 restoreSubmission(submission.id, restoreButton);
               });
-              const deleteButton = document.createElement('button');
-              deleteButton.type = 'button';
-              deleteButton.className = 'button-danger';
-              deleteButton.textContent = 'Delete Permanently';
-              deleteButton.addEventListener('click', () => {
-                deletePermanently(submission.id, deleteButton);
-              });
               actionWrapper.appendChild(restoreButton);
-              actionWrapper.appendChild(deleteButton);
             } else {
               const viewButton = document.createElement('button');
               viewButton.type = 'button';
+              viewButton.className = 'btn btn-secondary';
               viewButton.textContent = 'View';
               viewButton.addEventListener('click', () => {
                 const encodedId = encodeURIComponent(submission.id);
@@ -585,8 +744,9 @@
 
               const archiveButton = document.createElement('button');
               archiveButton.type = 'button';
-              archiveButton.className = 'button-warning';
-              archiveButton.textContent = 'Delete';
+              archiveButton.className = 'btn btn-danger';
+              archiveButton.innerHTML = '🗑';
+              archiveButton.title = "Trash";
               archiveButton.addEventListener('click', () => {
                 trashSubmission(submission.id, archiveButton);
               });
@@ -595,8 +755,10 @@
               actionWrapper.appendChild(archiveButton);
             }
           } else {
+            // Default active view
             const viewButton = document.createElement('button');
             viewButton.type = 'button';
+            viewButton.className = 'btn btn-secondary';
             viewButton.textContent = 'View';
             viewButton.addEventListener('click', () => {
               const encodedId = encodeURIComponent(submission.id);
@@ -605,8 +767,8 @@
 
             const archiveButton = document.createElement('button');
             archiveButton.type = 'button';
-            archiveButton.className = 'button-warning';
-            archiveButton.textContent = 'Delete';
+            archiveButton.className = 'btn btn-danger';
+            archiveButton.textContent = 'Trash';
             archiveButton.addEventListener('click', () => {
               trashSubmission(submission.id, archiveButton);
             });
@@ -628,6 +790,7 @@
 
         setStatus('', false);
       } catch (error) {
+        console.error(error);
         setStatus('Unable to load submissions. Please try again.', true);
       }
     }
@@ -672,43 +835,134 @@
       });
     }
 
-    if (passwordToggle) {
-      passwordToggle.addEventListener('click', () => {
-        const shouldShow = passwordPanel.hidden;
-        passwordPanel.hidden = !shouldShow;
-        if (shouldShow) {
-          passwordForm.reset();
-          setPasswordStatus('', false);
+    // Course Management Logic
+    async function loadCourses() {
+      const token = getToken();
+      if (!token) return;
+
+      courseStatus.textContent = 'Loading courses...';
+      try {
+        const res = await fetch('/admin/api/courses', {
+          headers: { Authorization: `Bearer ${token}` }
+        });
+        if (res.ok) {
+          loadedCourses = await res.json();
+          renderCourses();
+          courseStatus.textContent = '';
+        } else {
+          courseStatus.textContent = 'Failed to load courses.';
+        }
+      } catch (e) {
+        courseStatus.textContent = 'Error loading courses.';
+      }
+    }
+
+    function renderCourses() {
+      courseListContainer.innerHTML = '';
+      if (!loadedCourses || loadedCourses.length === 0) {
+        courseListContainer.innerHTML = '<div style="grid-column: 1 / -1; text-align: center; color: var(--text-muted); padding: 40px;">No courses found.</div>';
+        return;
+      }
+
+      const grid = document.createElement('div');
+      grid.className = 'course-grid';
+
+      loadedCourses.forEach((course, index) => {
+        const card = document.createElement('div');
+        card.className = 'course-item-card';
+        card.innerHTML = `
+            <div class="course-card-header">
+                <div class="course-title">${course.name}</div>
+                <div style="display: flex; gap: 8px;">
+                     <span class="badge ${course.isCharity ? 'badge-warning' : 'badge-success'}">${course.isCharity ? 'Charity' : 'Standard'}</span>
+                     ${course.isFreeTrial ? '<span class="badge badge-gray">Trial</span>' : ''}
+                </div>
+            </div>
+            
+            <div class="course-card-row">
+                <div class="input-group">
+                    <label>Price (£)</label>
+                    <input type="number" class="course-price" value="${course.price}" data-index="${index}" placeholder="0.00">
+                </div>
+                <div class="input-group">
+                    <label>Duration</label>
+                    <input type="text" class="course-duration" value="${course.duration}" data-index="${index}" placeholder="e.g. 1 Hour">
+                </div>
+            </div>
+
+            <div class="input-group">
+                 <label>Syllabus / Topics</label>
+                 <textarea rows="3" class="course-syllabus" data-index="${index}" placeholder="Enter topics...">${course.syllabus || ''}</textarea>
+            </div>
+
+            <div style="display: flex; align-items: center; justify-content: space-between; border-top: 1px solid #f3f4f6; padding-top: 12px; margin-top: auto;">
+                <div style="display: flex; align-items: center; gap: 8px;">
+                    <input type="checkbox" id="trial-${index}" class="course-trial" ${course.isFreeTrial ? 'checked' : ''} data-index="${index}" style="width: auto; margin:0;">
+                    <label for="trial-${index}" style="margin:0; font-size: 0.9rem; color: var(--text-main); cursor: pointer;">Free Trial</label>
+                </div>
+                <!-- Future: Add Toggle for Charity? or Delete button -->
+            </div>
+        `;
+        grid.appendChild(card);
+      });
+      courseListContainer.appendChild(grid);
+    }
+
+    async function saveCourses() {
+      const token = getToken();
+      if (!token) return;
+
+      // Update loadedCourses from DOM
+      const cards = document.querySelectorAll('.course-item-card');
+      cards.forEach(card => {
+        const priceInput = card.querySelector('.course-price');
+        const durationInput = card.querySelector('.course-duration');
+        const syllabusInput = card.querySelector('.course-syllabus');
+        const trialInput = card.querySelector('.course-trial');
+
+        const index = parseInt(priceInput.dataset.index);
+        if (loadedCourses[index]) {
+          loadedCourses[index].price = parseFloat(priceInput.value) || 0;
+          loadedCourses[index].duration = durationInput.value;
+          loadedCourses[index].syllabus = syllabusInput.value;
+          loadedCourses[index].isFreeTrial = trialInput.checked;
         }
       });
+
+      courseStatus.textContent = 'Saving...';
+      try {
+        const res = await fetch('/admin/api/courses', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+            Authorization: `Bearer ${token}`
+          },
+          body: JSON.stringify(loadedCourses)
+        });
+
+        if (res.ok) {
+          courseStatus.textContent = 'Courses saved successfully!';
+          setTimeout(() => { courseStatus.textContent = ''; }, 3000);
+        } else {
+          courseStatus.textContent = 'Failed to save.';
+        }
+      } catch (err) {
+        console.error(err);
+        courseStatus.textContent = 'Error saving changes.';
+      }
     }
 
-    if (passwordForm) {
-      passwordForm.addEventListener('submit', changePassword);
+    if (saveCoursesBtn) {
+      saveCoursesBtn.addEventListener('click', saveCourses);
+    }
+    if (refreshCoursesBtn) {
+      refreshCoursesBtn.addEventListener('click', loadCourses);
     }
 
-    if (backupButton) {
-      backupButton.addEventListener('click', runBackup);
-    }
-
-    trashButton.addEventListener('click', () => {
-      viewMode = viewMode === 'trash' ? 'active' : 'trash';
-      fetchSubmissions();
-    });
-
-    if (allButton) {
-      allButton.addEventListener('click', () => {
-        viewMode = viewMode === 'all' ? 'active' : 'all';
-        fetchSubmissions();
-      });
-    }
-
-    logoutButton.addEventListener('click', () => {
-      clearToken();
-      window.location.href = '/admin';
-    });
-
-    if (getToken()) {
+    // Initialize
+    const token = getToken();
+    if (token) {
+      showDashboard();
       fetchSubmissions();
     } else {
       showLogin();

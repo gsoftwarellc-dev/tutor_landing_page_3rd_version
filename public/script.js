@@ -108,6 +108,7 @@ if (form && submitButton && parentNameInput && parentEmailInput && parentPhoneIn
       specificNeedsText: specificNeedsValue,
       specificNeeds: specificNeedsValue,
       discoverySource: getDiscoverySource(),
+      isCharity: form.querySelector('input[name="isCharity"]') ? form.querySelector('input[name="isCharity"]').value === 'true' : false,
     };
 
     try {
@@ -125,15 +126,40 @@ if (form && submitButton && parentNameInput && parentEmailInput && parentPhoneIn
         return;
       }
 
-      setStatus('Registration submitted successfully', false);
+      // Check if this is a charity submission or standard
+      const isCharityInput = form.querySelector('input[name="isCharity"]');
+      const isCharity = isCharityInput && isCharityInput.value === 'true';
+
+      if (isCharity) {
+        setStatus('Registration submitted successfully! You are enrolled.', false);
+      } else {
+        // Standard flow - Paid
+        setStatus('Registration successful! Redirecting to payment...', false);
+        // Simulate redirect delay
+        setTimeout(() => {
+          // In a real app, this would be: window.location.href = '/payment';
+          alert('This would now redirect to Stripe/PayPal checkout.');
+          // For now, just reset form
+          form.reset();
+          restoreButton(originalText);
+        }, 2000);
+        return; // Return early to avoid immediate reset/restore
+      }
+
       form.reset();
       if (subjectError) {
         subjectError.hidden = true;
       }
     } catch (error) {
+      console.error(error);
       setStatus('Unable to submit registration. Please try again.', true);
     } finally {
-      restoreButton(originalText);
+      if (!form.querySelector('input[name="isCharity"]')) {
+        // Only restore immediately if not waiting for redirect
+        restoreButton(originalText);
+      } else if (form.querySelector('input[name="isCharity"]').value === 'true') {
+        restoreButton(originalText);
+      }
     }
   });
 }

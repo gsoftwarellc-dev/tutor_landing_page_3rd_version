@@ -1,0 +1,38 @@
+[
+    {
+        "id": "year-8-maths",
+        "name": "Year 8 - Maths",
+        "price": 0,
+        "isFreeTrial": false,
+        "duration": "1 hour",
+        "syllabus": "Algebra, Geometry, Statistics",
+        "isCharity": true
+    },
+    {
+        "id": "year-9-maths",
+        "name": "Year 9 - Maths",
+        "price": 0,
+        "isFreeTrial": false,
+        "duration": "1 hour",
+        "syllabus": "Trigonometry, Algebra II",
+        "isCharity": true
+    },
+    {
+        "id": "year-10-maths",
+        "name": "Year 10 - Maths",
+        "price": 0,
+        "isFreeTrial": false,
+        "duration": "1 hour",
+        "syllabus": "GCSE Prep, Advanced Algebra",
+        "isCharity": true
+    },
+    {
+        "id": "year-11-maths",
+        "name": "Year 11 - Maths",
+        "price": 0,
+        "isFreeTrial": false,
+        "duration": "1 hour",
+        "syllabus": "GCSE Advanced",
+        "isCharity": true
+    }
+]
